@@ -52,4 +52,4 @@ debug.txt
 fabric/run/
 
 # docker stuff
-config/
+docker-config/

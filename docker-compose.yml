@@ -6,4 +6,4 @@ services:
     ports:
       - 8192:8192
     volumes:
-      - ./config:/app/config
+      - ./docker-config:/app/config
