@@ -10,7 +10,6 @@ import com.google.inject.name.Named;
 import com.vexsoftware.nuvotifier.standalone.Main;
 import com.vexsoftware.nuvotifier.standalone.config.VotifierConfiguration;
 import com.vexsoftware.nuvotifier.standalone.config.options.CommandArguments;
-import com.vexsoftware.nuvotifier.standalone.utils.EnvironmentUtil;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class ConfigurationModule extends AbstractModule {
@@ -31,8 +32,8 @@ public class ConfigurationModule extends AbstractModule {
     public Options getOptions() {
         Options options = new Options();
 
-        options.addOption(CommandArguments.CONFIGURATION);
-        options.addOption(CommandArguments.BIND_ADDRESS);
+        options.addOption(CommandArguments.CONFIG_FOLDER);
+        options.addOption(CommandArguments.HOST);
         options.addOption(CommandArguments.PORT);
 
         return options;
@@ -53,36 +54,37 @@ public class ConfigurationModule extends AbstractModule {
     @Provides
     @Singleton
     @Named("configPath")
-    public File provideDefaultConfigurationPath() {
-        if (EnvironmentUtil.isUnix() || EnvironmentUtil.isSolaris() || EnvironmentUtil.isMacOS()) {
-            return new File("/etc/nuvotifier/");
+    public File provideConfigurationDirectory(CommandLine cli, Options options) {
+        if (cli.hasOption(CommandArguments.CONFIG_FOLDER)) {
+            try {
+                File file = cli.getParsedOptionValue(CommandArguments.CONFIG_FOLDER);
+                System.out.println(file != null ? "file is not null" : "file is null");
+                return cli.getParsedOptionValue(CommandArguments.CONFIG_FOLDER);
+            } catch (ParseException ex) {
+                HelpFormatter formatter = new HelpFormatter();
+                formatter.printHelp(Main.class.getName(), options);
+                System.exit(1);
+                return null;
+            }
         }
 
-        return new File("C:\\ProgramData\\nuvotifier\\");
+        Path currentRelativePath = Paths.get(".");
+        File config = new File(currentRelativePath.toFile(), "config");
+
+        if (!config.exists() && !config.mkdirs()) {
+            logger.error("Failed to create configuration directory at {}", config.getAbsolutePath());
+            System.exit(1);
+            return null;
+        }
+
+        return config;
     }
 
     @Provides
     @Singleton
-    public VotifierConfiguration provideVotifierConfiguration(
-            @Named("configPath") File configPath,
-            CommandLine cli,
-            Options options,
-            ObjectMapper mapper
-    ) {
+    public VotifierConfiguration provideVotifierConfiguration(@Named("configPath") File configPath, ObjectMapper mapper) {
         try {
-            File file = cli.hasOption(CommandArguments.CONFIGURATION)
-                    ? cli.getParsedOptionValue(CommandArguments.CONFIGURATION)
-                    : new File(configPath, "config.yml");
-
-            if (!configPath.exists()) {
-                if (!configPath.mkdirs()) {
-                    logger.error("Failed to make default configuration directory at {}", configPath.getAbsolutePath());
-                    System.exit(1);
-                    return null;
-                }
-
-                logger.debug("Made default configuration directory");
-            }
+            File file = new File(configPath, "config.yml");
 
             if (!file.exists()) {
                 InputStream resource = this.getClass().getClassLoader().getResourceAsStream("config.yml");
@@ -97,11 +99,6 @@ public class ConfigurationModule extends AbstractModule {
             }
 
             return mapper.readValue(file, VotifierConfiguration.class);
-        } catch (ParseException ex) {
-            HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp(Main.class.getName(), options);
-            System.exit(1);
-            return null;
         } catch (IOException e) {
             logger.error("Failed to read or copy defaults to configuration file:", e);
             System.exit(1);
@@ -118,30 +115,34 @@ public class ConfigurationModule extends AbstractModule {
         } catch (ParseException ex) {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp(Main.class.getName(), options);
+            System.exit(1);
             return null;
         }
     }
 
-    @Singleton
     @Provides
+    @Singleton
     @Named("bindAddress")
     public String getBindAddress(CommandLine cli, VotifierConfiguration config) {
-        if (cli.hasOption(CommandArguments.BIND_ADDRESS)) {
-            return cli.getOptionValue(CommandArguments.BIND_ADDRESS);
+        if (cli.hasOption(CommandArguments.HOST)) {
+            return cli.getOptionValue(CommandArguments.HOST);
         }
 
         return config.getHost();
     }
 
-    @Singleton
     @Provides
+    @Singleton
     @Named("port")
-    public int getPort(CommandLine cli, VotifierConfiguration config) {
+    public int getPort(CommandLine cli, Options options, VotifierConfiguration config) {
         if (cli.hasOption(CommandArguments.PORT)) {
             try {
-                return cli.getParsedOptionValue(CommandArguments.PORT);
-            } catch (ParseException ex) {
-                logger.error("Could not parse command line arguments", ex);
+                String str = cli.getOptionValue(CommandArguments.PORT);
+                return Integer.parseInt(str);
+            } catch (NumberFormatException ex) {
+                HelpFormatter formatter = new HelpFormatter();
+                formatter.printHelp(Main.class.getName(), options);
+                System.exit(1);
             }
         }
 
@@ -151,6 +152,7 @@ public class ConfigurationModule extends AbstractModule {
     @Singleton
     @Provides
     public InetSocketAddress getInetSocketAddress(@Named("bindAddress") String address, @Named("port") int port) {
+        System.out.println(address != null ? "address is not null" : "address is null");
         return new InetSocketAddress(address, port);
     }
 }
