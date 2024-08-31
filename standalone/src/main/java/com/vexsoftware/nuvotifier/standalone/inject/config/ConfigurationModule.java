@@ -62,7 +62,7 @@ public class ConfigurationModule extends AbstractModule {
                 return cli.getParsedOptionValue(CommandArguments.CONFIG_FOLDER);
             } catch (ParseException ex) {
                 HelpFormatter formatter = new HelpFormatter();
-                formatter.printHelp("java -jar nuvotifier-standalone.jar", options);
+                formatter.printHelp("java -jar nuvotifier-standalone.jar [OPTIONS]", options);
                 System.exit(1);
                 return null;
             }
@@ -114,7 +114,7 @@ public class ConfigurationModule extends AbstractModule {
             return parser.parse(options, args);
         } catch (ParseException ex) {
             HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("java -jar nuvotifier-standalone.jar", options);
+            formatter.printHelp("java -jar nuvotifier-standalone.jar [OPTIONS]", options);
             System.exit(1);
             return null;
         }
@@ -141,7 +141,7 @@ public class ConfigurationModule extends AbstractModule {
                 return Integer.parseInt(str);
             } catch (NumberFormatException ex) {
                 HelpFormatter formatter = new HelpFormatter();
-                formatter.printHelp("java -jar nuvotifier-standalone.jar", options);
+                formatter.printHelp("java -jar nuvotifier-standalone.jar [OPTIONS]", options);
                 System.exit(1);
             }
         }
