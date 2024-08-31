@@ -1,8 +1,8 @@
 package com.vexsoftware.nuvotifier.standalone.service.impl;
 
+import com.google.inject.Inject;
 import com.vexsoftware.nuvotifier.standalone.service.Service;
 import com.vexsoftware.nuvotifier.standalone.plugin.StandaloneVotifierPlugin;
-import jakarta.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
