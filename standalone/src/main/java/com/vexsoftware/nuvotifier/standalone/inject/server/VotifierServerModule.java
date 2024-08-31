@@ -46,6 +46,7 @@ public class VotifierServerModule extends AbstractModule {
             VotifierServerBuilder builder = new VotifierServerBuilder()
                     .bind(address)
                     .v1KeyFolder(rsaFolder)
+                    .disableV1Protocol(config.isDisableV1Protocol())
                     .debug(config.isDebug())
                     .backendServers(config.getBackendServers());
 

@@ -9,7 +9,7 @@ public class BackendServer {
     public BackendServer() {
         this.address = "127.0.0.1";
         this.port = 25565;
-        this.token = null;
+        this.token = "exampleToken";
     }
 
     public BackendServer(String address, int port, String token) {
