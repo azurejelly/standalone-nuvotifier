@@ -14,4 +14,4 @@ COPY --from=build /build/standalone/build/libs/nuvotifier-standalone.jar .
 
 EXPOSE 8192
 
-CMD ["java", "-jar", "nuvotifier-standalone.jar"]
+ENTRYPOINT ["java", "-jar", "nuvotifier-standalone.jar"]
