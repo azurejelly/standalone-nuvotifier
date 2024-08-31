@@ -152,7 +152,6 @@ public class ConfigurationModule extends AbstractModule {
     @Singleton
     @Provides
     public InetSocketAddress getInetSocketAddress(@Named("bindAddress") String address, @Named("port") int port) {
-        System.out.println(address != null ? "address is not null" : "address is null");
         return new InetSocketAddress(address, port);
     }
 }
