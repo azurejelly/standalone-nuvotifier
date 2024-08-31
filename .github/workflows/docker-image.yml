@@ -22,4 +22,4 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/standalone-nuvotifier:latest
+          tags: ${{ vars.DOCKER_HUB_USERNAME }}/standalone-nuvotifier:latest
