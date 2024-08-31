@@ -2,7 +2,6 @@ package com.vexsoftware.nuvotifier.standalone.plugin;
 
 import com.vexsoftware.nuvotifier.standalone.config.server.BackendServer;
 import com.vexsoftware.nuvotifier.standalone.logger.StandaloneVotifierLoggingAdapter;
-import com.vexsoftware.nuvotifier.standalone.receiver.VoteReceiver;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.net.VotifierServerBootstrap;
 import com.vexsoftware.votifier.net.VotifierSession;
@@ -10,6 +9,7 @@ import com.vexsoftware.votifier.platform.LoggingAdapter;
 import com.vexsoftware.votifier.platform.VotifierPlugin;
 import com.vexsoftware.votifier.platform.scheduler.ScheduledExecutorServiceVotifierScheduler;
 import com.vexsoftware.votifier.platform.scheduler.VotifierScheduler;
+import com.vexsoftware.votifier.support.forwarding.ForwardingVoteSource;
 import com.vexsoftware.votifier.support.forwarding.proxy.ProxyForwardingVoteSource;
 import com.vexsoftware.votifier.util.KeyCreator;
 
@@ -26,17 +26,16 @@ public class StandaloneVotifierPlugin implements VotifierPlugin {
 
     private final boolean debug;
     private final Map<String, Key> tokens;
-    private final VoteReceiver receiver;
     private final KeyPair v1Key;
     private final InetSocketAddress bind;
     private final VotifierScheduler scheduler;
     private final Map<String, BackendServer> backendServers;
     private final boolean disableV1Protocol;
+    private ForwardingVoteSource forwardingMethod;
     private VotifierServerBootstrap bootstrap;
 
-    public StandaloneVotifierPlugin(boolean debug, Map<String, Key> tokens, VoteReceiver receiver, KeyPair v1Key, InetSocketAddress bind, Map<String, BackendServer> backendServers, boolean disableV1Protocol) {
+    public StandaloneVotifierPlugin(boolean debug, Map<String, Key> tokens, KeyPair v1Key, InetSocketAddress bind, Map<String, BackendServer> backendServers, boolean disableV1Protocol) {
         this.debug = debug;
-        this.receiver = receiver;
         this.bind = bind;
         this.tokens = Map.copyOf(tokens);
         this.v1Key = v1Key;
@@ -90,7 +89,7 @@ public class StandaloneVotifierPlugin implements VotifierPlugin {
             );
         }
 
-        bootstrap.createForwardingSource(serverList, null);
+        this.forwardingMethod = bootstrap.createForwardingSource(serverList, null);
     }
 
     @Override
@@ -115,12 +114,23 @@ public class StandaloneVotifierPlugin implements VotifierPlugin {
 
     @Override
     public void onVoteReceived(Vote vote, VotifierSession.ProtocolVersion protocolVersion, String remoteAddress) throws Exception {
-        receiver.onVote(vote);
+        if (debug) {
+            getPluginLogger().info("Received protocol {} vote record for username {} from service {} using IP address {}",
+                    protocolVersion == VotifierSession.ProtocolVersion.ONE ? "v1" : "v2",
+                    vote.getUsername(),
+                    vote.getServiceName(),
+                    vote.getAddress()
+            );
+        }
+
+        if (forwardingMethod != null) {
+            forwardingMethod.forward(vote);
+        }
     }
 
     @Override
     public void onError(Throwable throwable, boolean alreadyHandledVote, String remoteAddress) {
-        receiver.onException(throwable);
+        getPluginLogger().error("Exception occurred while handling vote", throwable);
     }
 
     @Override

@@ -5,11 +5,9 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.vexsoftware.nuvotifier.standalone.config.VotifierConfiguration;
-import com.vexsoftware.nuvotifier.standalone.receiver.impl.VoteReceiverImpl;
 import com.vexsoftware.votifier.net.protocol.v1crypto.RSAIO;
 import com.vexsoftware.votifier.net.protocol.v1crypto.RSAKeygen;
 import com.vexsoftware.nuvotifier.standalone.plugin.StandaloneVotifierPlugin;
-import com.vexsoftware.nuvotifier.standalone.receiver.VoteReceiver;
 import com.vexsoftware.nuvotifier.standalone.plugin.builder.VotifierServerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +24,7 @@ public class VotifierServerModule extends AbstractModule {
     public StandaloneVotifierPlugin provideStandaloneVotifierPlugin(
             InetSocketAddress address,
             @Named("configPath") File configPath,
-            VotifierConfiguration config,
-            VoteReceiver receiver
+            VotifierConfiguration config
     ) {
         try {
             File rsaFolder = new File(configPath, "rsa" + File.separator);
@@ -49,7 +46,6 @@ public class VotifierServerModule extends AbstractModule {
             VotifierServerBuilder builder = new VotifierServerBuilder()
                     .bind(address)
                     .v1KeyFolder(rsaFolder)
-                    .receiver(receiver)
                     .debug(config.isDebug())
                     .backendServers(config.getBackendServers());
 
@@ -60,11 +56,6 @@ public class VotifierServerModule extends AbstractModule {
             System.exit(1);
             return null;
         }
-    }
-
-    @Override
-    protected void configure() {
-        this.bind(VoteReceiver.class).to(VoteReceiverImpl.class);
     }
 }
 
