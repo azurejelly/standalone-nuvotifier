@@ -18,7 +18,12 @@ $ java -Xms512M -Xmx512M -jar nuvotifier-standalone.jar
 
 You can also use command line arguments to configure some settings:
 ```shell
-$ java -Xms512M -Xmx512M -jar nuvotifier-standalone.jar --bind 0.0.0.0 --port 8195 --config /etc/nuvotifier/
+$ java -Xms512M -Xmx512M -jar nuvotifier-standalone.jar --host 127.0.0.1 --config /etc/nuvotifier/
+```
+
+To get a full list of options, run:
+```shell
+$ java -jar nuvotifier-standalone.jar --help
 ```
 
 ## Using Docker
@@ -28,21 +33,23 @@ $ docker pull azurejelly/standalone-nuvotifier:latest
 ```
 
 ### Running
-Run the image using:
+You can run the image using a command like:
 ```shell
 $ docker run -p 8192:8192 \
-    -v /etc/nuvotifier:/etc/nuvotifier \
+    -v /etc/nuvotifier:/app/config \
     --restart unless-stopped \
     --name nuvotifier \
     azurejelly/standalone-nuvotifier:latest
+    --port 8192
 ```
 
 This will:
 - Expose port 8192 on the host machine;
-- Map `/etc/nuvotifier` (host) to `/etc/nuvotifier` (container) using bind mounts;
+- Map `/etc/nuvotifier` (host) to `/app/config` (container) using bind mounts;
 - Restart the container automatically unless stopped;
 - Name the container `nuvotifier`;
-- And use the `azurejelly/standalone-nuvotifier:latest` image.
+- Use the `azurejelly/standalone-nuvotifier:latest` image;
+- And pass `--port 8192` as a command line argument to NuVotifier.
 
 Additionally, if you're also running your Minecraft server with Docker, you could create a network for cross-container communication:
 ```shell
@@ -63,7 +70,7 @@ services:
     ports:
       - 8192:8192
     volumes:
-      - ./config:/etc/nuvotifier
+      - ./config:/app/config
 ```
 
 # License
