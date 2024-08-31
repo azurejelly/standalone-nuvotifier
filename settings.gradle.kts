@@ -20,3 +20,6 @@ project(":nuvotifier-velocity").projectDir = file("velocity")
 
 include("nuvotifier-universal")
 project(":nuvotifier-universal").projectDir = file("universal")
+
+include("nuvotifier-standalone")
+project(":nuvotifier-standalone").projectDir = file("standalone")

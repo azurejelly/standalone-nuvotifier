@@ -1,0 +1,9 @@
+.gradle/
+.idea/
+.github/
+build/
+dev/
+Jenkinsfile
+LICENSE
+README.md
+.gitignore

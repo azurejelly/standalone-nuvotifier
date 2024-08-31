@@ -50,3 +50,6 @@ debug.txt
 
 # fabric
 fabric/run/
+
+# docker stuff
+config/

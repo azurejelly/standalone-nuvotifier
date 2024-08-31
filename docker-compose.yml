@@ -1,0 +1,9 @@
+services:
+  forwarder:
+    container_name: nuvotifier
+    image: azurejelly/standalone-nuvotifier:latest
+    restart: unless-stopped
+    ports:
+      - 8192:8192
+    volumes:
+      - ./config:/etc/nuvotifier

@@ -1,5 +1,8 @@
-package com.vexsoftware.votifier.util.standalone;
+package com.vexsoftware.nuvotifier.standalone.plugin.builder;
 
+import com.vexsoftware.nuvotifier.standalone.config.server.BackendServer;
+import com.vexsoftware.nuvotifier.standalone.plugin.StandaloneVotifierPlugin;
+import com.vexsoftware.nuvotifier.standalone.receiver.VoteReceiver;
 import com.vexsoftware.votifier.net.protocol.v1crypto.RSAIO;
 import com.vexsoftware.votifier.util.KeyCreator;
 
@@ -13,10 +16,14 @@ import java.util.Map;
 import java.util.Objects;
 
 public class VotifierServerBuilder {
+
     private final Map<String, Key> keyMap = new HashMap<>();
     private KeyPair v1Key;
     private InetSocketAddress bind;
     private VoteReceiver receiver;
+    private Map<String, BackendServer> servers;
+    private boolean debug;
+    private boolean disableV1Protocol;
 
     public VotifierServerBuilder addToken(String service, String token) {
         Objects.requireNonNull(service, "service");
@@ -49,9 +56,25 @@ public class VotifierServerBuilder {
         return this;
     }
 
+    public VotifierServerBuilder debug(boolean debug) {
+        this.debug = debug;
+        return this;
+    }
+
+    public VotifierServerBuilder backendServers(Map<String, BackendServer> servers) {
+        this.servers = servers;
+        return this;
+    }
+
+    public VotifierServerBuilder disableV1Protocol(boolean disableV1Protocol) {
+        this.disableV1Protocol = disableV1Protocol;
+        return this;
+    }
+
     public StandaloneVotifierPlugin create() {
         Objects.requireNonNull(bind, "need an address to bind to");
         Objects.requireNonNull(receiver, "need a receiver for votes");
-        return new StandaloneVotifierPlugin(keyMap, receiver, v1Key, bind);
+        Objects.requireNonNull(servers, "need a list of servers to forward votes for");
+        return new StandaloneVotifierPlugin(debug, keyMap, receiver, v1Key, bind, servers, disableV1Protocol);
     }
 }
