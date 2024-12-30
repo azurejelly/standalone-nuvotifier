@@ -29,12 +29,21 @@ public class RedisForwardingVoteSource implements ForwardingVoteSource {
         jedisPoolConfig.setTimeBetweenEvictionRuns(Duration.ofMillis(configuration.getTimeBetweenEvictionRuns()));
         jedisPoolConfig.setBlockWhenExhausted(configuration.isBlockWhenExhausted());
 
-        this.pool = new JedisPool(jedisPoolConfig,
-                credentials.getHost(),
-                credentials.getPort(),
-                5000,
-                credentials.getPassword()
-        );
+        String password = credentials.getPassword();
+        if (password == null || password.trim().isEmpty()) {
+            this.pool = new JedisPool(jedisPoolConfig,
+                    credentials.getHost(),
+                    credentials.getPort(),
+                    5000
+            );
+        } else {
+            this.pool = new JedisPool(jedisPoolConfig,
+                    credentials.getHost(),
+                    credentials.getPort(),
+                    5000,
+                    credentials.getPassword()
+            );
+        }
     }
 
     @Override
