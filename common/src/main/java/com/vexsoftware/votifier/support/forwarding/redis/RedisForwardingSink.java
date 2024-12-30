@@ -34,11 +34,21 @@ public class RedisForwardingSink extends JedisPubSub implements ForwardingVoteSi
         jedisPoolConfig.setTimeBetweenEvictionRuns(Duration.ofMillis(poolConfiguration.getTimeBetweenEvictionRuns()));
         jedisPoolConfig.setBlockWhenExhausted(poolConfiguration.isBlockWhenExhausted());
 
-        this.pool = new JedisPool(jedisPoolConfig,
-                credentials.getHost(),
-                credentials.getPort(),
-                5000,
-                credentials.getPassword());
+        String password = credentials.getPassword();
+        if (password == null || password.trim().isEmpty()) {
+            this.pool = new JedisPool(jedisPoolConfig,
+                    credentials.getHost(),
+                    credentials.getPort(),
+                    5000
+            );
+        } else {
+            this.pool = new JedisPool(jedisPoolConfig,
+                    credentials.getHost(),
+                    credentials.getPort(),
+                    5000,
+                    credentials.getPassword()
+            );
+        }
 
         CompletableFuture.runAsync(() -> {
             try (Jedis jedis = pool.getResource()) {
