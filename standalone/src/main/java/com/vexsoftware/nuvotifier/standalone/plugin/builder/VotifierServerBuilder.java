@@ -1,5 +1,6 @@
 package com.vexsoftware.nuvotifier.standalone.plugin.builder;
 
+import com.vexsoftware.nuvotifier.standalone.config.redis.RedisVotifierConfiguration;
 import com.vexsoftware.nuvotifier.standalone.config.server.BackendServer;
 import com.vexsoftware.nuvotifier.standalone.plugin.StandaloneVotifierPlugin;
 import com.vexsoftware.votifier.net.protocol.v1crypto.RSAIO;
@@ -22,6 +23,7 @@ public class VotifierServerBuilder {
     private Map<String, BackendServer> servers;
     private boolean debug;
     private boolean disableV1Protocol;
+    private RedisVotifierConfiguration redis;
 
     public VotifierServerBuilder addToken(String service, String token) {
         Objects.requireNonNull(service, "service");
@@ -64,9 +66,14 @@ public class VotifierServerBuilder {
         return this;
     }
 
+    public VotifierServerBuilder redis(RedisVotifierConfiguration cfg) {
+        this.redis = cfg;
+        return this;
+    }
+
     public StandaloneVotifierPlugin create() {
         Objects.requireNonNull(bind, "need an address to bind to");
         Objects.requireNonNull(servers, "need a list of servers to forward votes for");
-        return new StandaloneVotifierPlugin(debug, keyMap, v1Key, bind, servers, disableV1Protocol);
+        return new StandaloneVotifierPlugin(debug, keyMap, v1Key, bind, servers, disableV1Protocol, redis);
     }
 }
