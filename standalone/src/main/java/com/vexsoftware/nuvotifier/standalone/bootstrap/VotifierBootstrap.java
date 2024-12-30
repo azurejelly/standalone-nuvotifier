@@ -163,24 +163,4 @@ public class VotifierBootstrap {
             System.exit(1);
         });
     }
-
-    public void shutdown() {
-        this.plugin.shutdown();
-    }
-
-    public Logger logger() {
-        return logger;
-    }
-
-    public Options options() {
-        return options;
-    }
-
-    public ObjectMapper mapper() {
-        return mapper;
-    }
-
-    public StandaloneVotifierPlugin plugin() {
-        return plugin;
-    }
 }
