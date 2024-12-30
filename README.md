@@ -12,7 +12,7 @@ Standalone NuVotifier server implementation. From the original README:
 ## Running
 Grab a compiled binary from [GitHub releases](https://github.com/azujelly/standalone-nuvotifier/releases) and run it from the command line. For example:
 ```shell
-$ curl -O https://github.com/azujelly/standalone-nuvotifier/releases/download/3.0.0-SNAPSHOT/nuvotifier-standalone.jar
+$ curl -O https://github.com/azujelly/standalone-nuvotifier/releases/download/3.1.0-SNAPSHOT/nuvotifier-standalone.jar
 $ java -Xms512M -Xmx512M -jar nuvotifier-standalone.jar
 ```
 
