@@ -276,7 +276,7 @@ public class NuVotifierBukkit extends JavaPlugin implements VoteHandler, Votifie
                         .maxTotal(redisPoolSection.getInt("max-total"))
                         .maxIdle(redisPoolSection.getInt("max-idle"))
                         .minIdle(redisPoolSection.getInt("min-idle"))
-                        .minEvictableIdleTime(redisPoolSection.getInt("min-evictable-idle.time"))
+                        .minEvictableIdleTime(redisPoolSection.getInt("min-evictable-idle-time"))
                         .timeBetweenEvictionRuns(redisPoolSection.getInt("time-between-eviction-runs"))
                         .numTestsPerEvictionRun(redisPoolSection.getInt("num-tests-per-eviction-run"))
                         .blockWhenExhausted(redisPoolSection.getBoolean("block-when-exhausted"))

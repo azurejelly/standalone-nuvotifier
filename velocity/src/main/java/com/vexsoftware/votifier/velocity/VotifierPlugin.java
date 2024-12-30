@@ -231,7 +231,7 @@ public class VotifierPlugin implements VoteHandler, ProxyVotifierPlugin {
                     .maxTotal(redisPoolSection.getLong("max-total").intValue())
                     .maxIdle(redisPoolSection.getLong("max-idle").intValue())
                     .minIdle(redisPoolSection.getLong("min-idle").intValue())
-                    .minEvictableIdleTime(redisPoolSection.getLong("min-evictable-idle.time").intValue())
+                    .minEvictableIdleTime(redisPoolSection.getLong("min-evictable-idle-time").intValue())
                     .timeBetweenEvictionRuns(redisPoolSection.getLong("time-between-eviction-runs").intValue())
                     .numTestsPerEvictionRun(redisPoolSection.getLong("num-tests-per-eviction-run").intValue())
                     .blockWhenExhausted(redisPoolSection.getBoolean("block-when-exhausted"))
