@@ -15,12 +15,8 @@ dependencies {
 
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")
     implementation("commons-cli:commons-cli:1.9.0")
-    implementation("com.google.guava:guava:33.3.0-jre")
     implementation("org.slf4j:slf4j-api:2.0.16")
     implementation("org.slf4j:slf4j-simple:2.0.16")
-    implementation("com.google.inject:guice:7.0.0") {
-        exclude(group = "com.google.guava", module = "guava")
-    }
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")

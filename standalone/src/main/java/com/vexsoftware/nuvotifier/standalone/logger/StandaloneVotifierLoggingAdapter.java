@@ -7,7 +7,11 @@ import org.slf4j.LoggerFactory;
 
 public class StandaloneVotifierLoggingAdapter implements LoggingAdapter {
 
-    private final Logger logger = LoggerFactory.getLogger(StandaloneVotifierPlugin.class);
+    private final Logger logger;
+
+    public StandaloneVotifierLoggingAdapter(Class<?> clazz) {
+        this.logger = LoggerFactory.getLogger(clazz);
+    }
 
     @Override
     public void error(String s) {

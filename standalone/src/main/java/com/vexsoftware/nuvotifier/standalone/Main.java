@@ -1,16 +1,12 @@
 package com.vexsoftware.nuvotifier.standalone;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.vexsoftware.nuvotifier.standalone.inject.VotifierModule;
-import com.vexsoftware.nuvotifier.standalone.service.Service;
+import com.vexsoftware.nuvotifier.standalone.bootstrap.VotifierBootstrap;
 
 public class Main {
 
     public static void main(String[] args) {
-        Injector injector = Guice.createInjector(new VotifierModule(args));
-        Service service = injector.getInstance(Service.class);
-        service.start();
+        VotifierBootstrap bootstrap = new VotifierBootstrap(args);
+        bootstrap.init();
 
         while (true) {
             // Keep the thing running
