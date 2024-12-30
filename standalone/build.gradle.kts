@@ -34,7 +34,7 @@ tasks {
         }
 
         manifest {
-            attributes["Main-Class"] = "com.vexsoftware.nuvotifier.standalone.Main"
+            attributes["Main-Class"] = "com.vexsoftware.votifier.standalone.Main"
         }
 
         duplicatesStrategy = DuplicatesStrategy.WARN
