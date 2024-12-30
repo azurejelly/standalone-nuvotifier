@@ -1,4 +1,4 @@
-package com.vexsoftware.nuvotifier.standalone.config.options;
+package com.vexsoftware.votifier.standalone.config.options;
 
 import org.apache.commons.cli.Option;
 

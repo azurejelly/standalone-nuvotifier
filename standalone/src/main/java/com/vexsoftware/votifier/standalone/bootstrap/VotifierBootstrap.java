@@ -1,12 +1,12 @@
-package com.vexsoftware.nuvotifier.standalone.bootstrap;
+package com.vexsoftware.votifier.standalone.bootstrap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import com.vexsoftware.nuvotifier.standalone.config.VotifierConfiguration;
-import com.vexsoftware.nuvotifier.standalone.config.options.CommandArguments;
-import com.vexsoftware.nuvotifier.standalone.plugin.StandaloneVotifierPlugin;
-import com.vexsoftware.nuvotifier.standalone.plugin.builder.VotifierServerBuilder;
+import com.vexsoftware.votifier.standalone.config.VotifierConfiguration;
+import com.vexsoftware.votifier.standalone.config.options.CommandArguments;
+import com.vexsoftware.votifier.standalone.plugin.StandaloneVotifierPlugin;
+import com.vexsoftware.votifier.standalone.plugin.builder.VotifierServerBuilder;
 import com.vexsoftware.votifier.net.protocol.v1crypto.RSAIO;
 import com.vexsoftware.votifier.net.protocol.v1crypto.RSAKeygen;
 import org.apache.commons.cli.*;

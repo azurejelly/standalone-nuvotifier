@@ -1,4 +1,4 @@
-package com.vexsoftware.nuvotifier.standalone.config.server;
+package com.vexsoftware.votifier.standalone.config.server;
 
 public class BackendServer {
 

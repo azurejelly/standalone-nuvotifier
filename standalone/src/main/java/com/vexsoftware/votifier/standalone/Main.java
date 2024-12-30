@@ -1,6 +1,6 @@
-package com.vexsoftware.nuvotifier.standalone;
+package com.vexsoftware.votifier.standalone;
 
-import com.vexsoftware.nuvotifier.standalone.bootstrap.VotifierBootstrap;
+import com.vexsoftware.votifier.standalone.bootstrap.VotifierBootstrap;
 
 public class Main {
 

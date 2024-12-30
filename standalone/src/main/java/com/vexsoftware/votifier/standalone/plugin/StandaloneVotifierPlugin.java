@@ -1,9 +1,9 @@
-package com.vexsoftware.nuvotifier.standalone.plugin;
+package com.vexsoftware.votifier.standalone.plugin;
 
-import com.vexsoftware.nuvotifier.standalone.config.redis.RedisVotifierConfiguration;
-import com.vexsoftware.nuvotifier.standalone.config.redis.pool.RedisPoolVotifierConfiguration;
-import com.vexsoftware.nuvotifier.standalone.config.server.BackendServer;
-import com.vexsoftware.nuvotifier.standalone.logger.StandaloneVotifierLoggingAdapter;
+import com.vexsoftware.votifier.standalone.config.redis.RedisVotifierConfiguration;
+import com.vexsoftware.votifier.standalone.config.redis.pool.RedisPoolVotifierConfiguration;
+import com.vexsoftware.votifier.standalone.config.server.BackendServer;
+import com.vexsoftware.votifier.standalone.logger.StandaloneVotifierLoggingAdapter;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.net.VotifierServerBootstrap;
 import com.vexsoftware.votifier.net.VotifierSession;

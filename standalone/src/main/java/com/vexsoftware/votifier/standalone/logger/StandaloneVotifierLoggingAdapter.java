@@ -1,6 +1,5 @@
-package com.vexsoftware.nuvotifier.standalone.logger;
+package com.vexsoftware.votifier.standalone.logger;
 
-import com.vexsoftware.nuvotifier.standalone.plugin.StandaloneVotifierPlugin;
 import com.vexsoftware.votifier.platform.LoggingAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

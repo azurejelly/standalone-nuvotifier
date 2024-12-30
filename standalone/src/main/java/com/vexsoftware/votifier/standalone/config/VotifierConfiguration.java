@@ -1,8 +1,8 @@
-package com.vexsoftware.nuvotifier.standalone.config;
+package com.vexsoftware.votifier.standalone.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.vexsoftware.nuvotifier.standalone.config.redis.RedisVotifierConfiguration;
-import com.vexsoftware.nuvotifier.standalone.config.server.BackendServer;
+import com.vexsoftware.votifier.standalone.config.redis.RedisVotifierConfiguration;
+import com.vexsoftware.votifier.standalone.config.server.BackendServer;
 
 import java.util.HashMap;
 import java.util.Map;

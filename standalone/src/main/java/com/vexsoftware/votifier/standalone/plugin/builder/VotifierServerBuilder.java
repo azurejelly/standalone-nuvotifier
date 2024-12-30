@@ -1,8 +1,8 @@
-package com.vexsoftware.nuvotifier.standalone.plugin.builder;
+package com.vexsoftware.votifier.standalone.plugin.builder;
 
-import com.vexsoftware.nuvotifier.standalone.config.redis.RedisVotifierConfiguration;
-import com.vexsoftware.nuvotifier.standalone.config.server.BackendServer;
-import com.vexsoftware.nuvotifier.standalone.plugin.StandaloneVotifierPlugin;
+import com.vexsoftware.votifier.standalone.config.redis.RedisVotifierConfiguration;
+import com.vexsoftware.votifier.standalone.config.server.BackendServer;
+import com.vexsoftware.votifier.standalone.plugin.StandaloneVotifierPlugin;
 import com.vexsoftware.votifier.net.protocol.v1crypto.RSAIO;
 import com.vexsoftware.votifier.util.KeyCreator;
 

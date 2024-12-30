@@ -1,7 +1,7 @@
-package com.vexsoftware.nuvotifier.standalone.config.redis;
+package com.vexsoftware.votifier.standalone.config.redis;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.vexsoftware.nuvotifier.standalone.config.redis.pool.RedisPoolVotifierConfiguration;
+import com.vexsoftware.votifier.standalone.config.redis.pool.RedisPoolVotifierConfiguration;
 
 public class RedisVotifierConfiguration {
 
