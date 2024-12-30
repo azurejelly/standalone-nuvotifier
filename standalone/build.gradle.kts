@@ -13,12 +13,12 @@ repositories {
 dependencies {
     api(project(":nuvotifier-common"))
 
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")
-    implementation("commons-cli:commons-cli:1.9.0")
-    implementation("org.slf4j:slf4j-api:2.0.16")
-    implementation("org.slf4j:slf4j-simple:2.0.16")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${Versions.JACKSON_YAML}")
+    implementation("commons-cli:commons-cli:${Versions.COMMONS_CLI}")
+    implementation("org.slf4j:slf4j-api:${Versions.SLF4J}")
+    implementation("org.slf4j:slf4j-simple:${Versions.SLF4J}")
 
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
+    testImplementation(platform("org.junit:junit-bom:${Versions.JUNIT}"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
