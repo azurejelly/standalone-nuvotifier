@@ -18,13 +18,10 @@ public class RedisForwardingVoteSource implements ForwardingVoteSource {
     private final Gson gson = new Gson();
     private final String channel;
 
-    public RedisForwardingVoteSource(RedisCredentials credentials,
-                                     RedisPoolConfiguration configuration) {
-
+    public RedisForwardingVoteSource(RedisCredentials credentials, RedisPoolConfiguration configuration) {
         this.channel = credentials.getChannel();
 
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-
         jedisPoolConfig.setMaxTotal(configuration.getMaxTotal());
         jedisPoolConfig.setMaxIdle(configuration.getMaxIdle());
         jedisPoolConfig.setMinIdle(configuration.getMinIdle());
@@ -36,7 +33,8 @@ public class RedisForwardingVoteSource implements ForwardingVoteSource {
                 credentials.getHost(),
                 credentials.getPort(),
                 5000,
-                credentials.getPassword());
+                credentials.getPassword()
+        );
     }
 
     @Override

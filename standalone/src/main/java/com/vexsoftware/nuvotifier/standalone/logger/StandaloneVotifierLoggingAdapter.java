@@ -25,7 +25,8 @@ public class StandaloneVotifierLoggingAdapter implements LoggingAdapter {
 
     @Override
     public void error(String s, Throwable e, Object... o) {
-        logger.error(s, e, o);
+        // FIXME: this should handle the 'o' parameter as well
+        logger.error(s, e);
     }
 
     @Override

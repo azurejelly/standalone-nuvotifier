@@ -145,6 +145,7 @@ public class VotifierBootstrap {
                     .v1KeyFolder(rsaFolder)
                     .disableV1Protocol(config.isDisableV1Protocol())
                     .debug(config.isDebug())
+                    .redis(config.getRedis())
                     .backendServers(config.getBackendServers());
 
             this.config.getTokens().forEach(builder::addToken);

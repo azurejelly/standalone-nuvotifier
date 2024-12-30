@@ -17,6 +17,7 @@ dependencies {
     implementation("commons-cli:commons-cli:${Versions.COMMONS_CLI}")
     implementation("org.slf4j:slf4j-api:${Versions.SLF4J}")
     implementation("org.slf4j:slf4j-simple:${Versions.SLF4J}")
+    implementation("redis.clients:jedis:${Versions.JEDIS}")
 
     testImplementation(platform("org.junit:junit-bom:${Versions.JUNIT}"))
     testImplementation("org.junit.jupiter:junit-jupiter")

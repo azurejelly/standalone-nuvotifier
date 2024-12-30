@@ -1,5 +1,7 @@
 package com.vexsoftware.nuvotifier.standalone.plugin;
 
+import com.vexsoftware.nuvotifier.standalone.config.redis.RedisVotifierConfiguration;
+import com.vexsoftware.nuvotifier.standalone.config.redis.pool.RedisPoolVotifierConfiguration;
 import com.vexsoftware.nuvotifier.standalone.config.server.BackendServer;
 import com.vexsoftware.nuvotifier.standalone.logger.StandaloneVotifierLoggingAdapter;
 import com.vexsoftware.votifier.model.Vote;
@@ -11,6 +13,9 @@ import com.vexsoftware.votifier.platform.scheduler.ScheduledExecutorServiceVotif
 import com.vexsoftware.votifier.platform.scheduler.VotifierScheduler;
 import com.vexsoftware.votifier.support.forwarding.ForwardingVoteSource;
 import com.vexsoftware.votifier.support.forwarding.proxy.ProxyForwardingVoteSource;
+import com.vexsoftware.votifier.support.forwarding.redis.RedisCredentials;
+import com.vexsoftware.votifier.support.forwarding.redis.RedisForwardingVoteSource;
+import com.vexsoftware.votifier.support.forwarding.redis.RedisPoolConfiguration;
 import com.vexsoftware.votifier.util.KeyCreator;
 
 import java.net.InetAddress;
@@ -24,6 +29,7 @@ import java.util.function.Consumer;
 
 public class StandaloneVotifierPlugin implements VotifierPlugin {
 
+    private final RedisVotifierConfiguration redis;
     private final boolean debug;
     private final Map<String, Key> tokens;
     private final KeyPair v1Key;
@@ -34,7 +40,13 @@ public class StandaloneVotifierPlugin implements VotifierPlugin {
     private ForwardingVoteSource forwardingMethod;
     private VotifierServerBootstrap bootstrap;
 
-    public StandaloneVotifierPlugin(boolean debug, Map<String, Key> tokens, KeyPair v1Key, InetSocketAddress bind, Map<String, BackendServer> backendServers, boolean disableV1Protocol) {
+    public StandaloneVotifierPlugin(
+            boolean debug, Map<String, Key> tokens,
+            KeyPair v1Key, InetSocketAddress bind,
+            Map<String, BackendServer> backendServers,
+            boolean disableV1Protocol,
+            RedisVotifierConfiguration redis
+    ) {
         this.debug = debug;
         this.bind = bind;
         this.tokens = Map.copyOf(tokens);
@@ -42,6 +54,7 @@ public class StandaloneVotifierPlugin implements VotifierPlugin {
         this.backendServers = backendServers;
         this.scheduler = new ScheduledExecutorServiceVotifierScheduler(Executors.newScheduledThreadPool(1));
         this.disableV1Protocol = disableV1Protocol;
+        this.redis = redis;
     }
 
     public void start(Consumer<Throwable> error) {
@@ -61,41 +74,66 @@ public class StandaloneVotifierPlugin implements VotifierPlugin {
     }
 
     private void makeForwardingSource(Map<String, BackendServer> backendServers) {
-        List<ProxyForwardingVoteSource.BackendServer> serverList = new ArrayList<>();
-        for (Map.Entry<String, BackendServer> entry : backendServers.entrySet()) {
-            String key = entry.getKey();
-            BackendServer server = entry.getValue();
+        if (redis != null && redis.isEnabled()) {
+            getPluginLogger().info("Using Redis as the vote forwarding method.");
 
-            InetAddress address;
-            try {
-                address = InetAddress.getByName(server.getAddress());
-            } catch (UnknownHostException ex) {
-                getPluginLogger().warn("Could not look up address {} for server '{}'. Ignoring!", server.getAddress(), key);
-                continue;
+            RedisCredentials redisCredentials = RedisCredentials.builder()
+                    .host(redis.getAddress())
+                    .port(redis.getPort())
+                    .password(redis.getPassword())
+                    .channel(redis.getChannel())
+                    .build();
+
+            RedisPoolVotifierConfiguration pool = redis.getPoolSettings();
+            RedisPoolConfiguration redisPoolConfiguration = RedisPoolConfiguration.builder()
+                    .timeout(pool.getTimeout())
+                    .maxTotal(pool.getMaxTotal())
+                    .maxIdle(pool.getMaxIdle())
+                    .minIdle(pool.getMinIdle())
+                    .minEvictableIdleTime(pool.getMinEvictableIdleTime())
+                    .timeBetweenEvictionRuns(pool.getTimeBetweenEvictionRuns())
+                    .numTestsPerEvictionRun(pool.getNumTestsPerEvictionRun())
+                    .blockWhenExhausted(pool.isBlockWhenExhausted())
+                    .build();
+
+            this.forwardingMethod = new RedisForwardingVoteSource(redisCredentials, redisPoolConfiguration);
+        } else {
+            List<ProxyForwardingVoteSource.BackendServer> serverList = new ArrayList<>();
+            for (Map.Entry<String, BackendServer> entry : backendServers.entrySet()) {
+                String key = entry.getKey();
+                BackendServer server = entry.getValue();
+
+                InetAddress address;
+                try {
+                    address = InetAddress.getByName(server.getAddress());
+                } catch (UnknownHostException ex) {
+                    getPluginLogger().warn("Could not look up getAddress {} for server '{}'. Ignoring!", server.getAddress(), key);
+                    continue;
+                }
+
+                Key token;
+                try {
+                    token = KeyCreator.createKeyFrom(server.getToken());
+                } catch (IllegalArgumentException ex) {
+                    getPluginLogger().error("Could not add proxy target '{}'. Is the provided token valid?" +
+                            "Votes will not be forwarded to this server!", key, ex);
+
+                    continue;
+                }
+
+                InetSocketAddress socket = new InetSocketAddress(address, server.getPort());
+                serverList.add(new ProxyForwardingVoteSource.BackendServer(key, socket, token));
             }
 
-            Key token;
-            try {
-                token = KeyCreator.createKeyFrom(server.getToken());
-            } catch (IllegalArgumentException ex) {
-                getPluginLogger().error("Could not add proxy target '{}'. Is the provided token valid?" +
-                        "Votes will not be forwarded to this server!", key, ex);
-
-                continue;
+            if (!serverList.isEmpty()) {
+                getPluginLogger().info(
+                        "Forwarding votes from this NuVotifier instance to another {} valid backend servers.",
+                        serverList.size()
+                );
             }
 
-            InetSocketAddress socket = new InetSocketAddress(address, server.getPort());
-            serverList.add(new ProxyForwardingVoteSource.BackendServer(key, socket, token));
+            this.forwardingMethod = bootstrap.createForwardingSource(serverList, null);
         }
-
-        if (!serverList.isEmpty()) {
-            getPluginLogger().info(
-                    "Forwarding votes from this NuVotifier instance to another {} valid backend servers.",
-                    serverList.size()
-            );
-        }
-
-        this.forwardingMethod = bootstrap.createForwardingSource(serverList, null);
     }
 
     @Override
@@ -119,9 +157,9 @@ public class StandaloneVotifierPlugin implements VotifierPlugin {
     }
 
     @Override
-    public void onVoteReceived(Vote vote, VotifierSession.ProtocolVersion protocolVersion, String remoteAddress) throws Exception {
+    public void onVoteReceived(Vote vote, VotifierSession.ProtocolVersion protocolVersion, String remoteAddress) {
         if (debug) {
-            getPluginLogger().info("Received protocol {} vote record for username {} from service {} using IP address {}",
+            getPluginLogger().info("Received protocol {} vote record for username {} from service {} @ {}",
                     protocolVersion == VotifierSession.ProtocolVersion.ONE ? "v1" : "v2",
                     vote.getUsername(),
                     vote.getServiceName(),
@@ -136,7 +174,8 @@ public class StandaloneVotifierPlugin implements VotifierPlugin {
 
     @Override
     public void onError(Throwable throwable, boolean alreadyHandledVote, String remoteAddress) {
-        getPluginLogger().error("Exception occurred while handling vote", throwable);
+        getPluginLogger().error("Exception caught while processing vote from " + remoteAddress
+                + " (already handled: " + alreadyHandledVote + ")", throwable);
     }
 
     @Override

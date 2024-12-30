@@ -18,8 +18,25 @@ tokens:
 # option is currently not recommended as most voting sites only support the old protocol at present.
 disable-v1-protocol: false
 
+# Redis forwarding settings.
+# If disabled, we will fall back to the 'proxy' forwarding mode.
+redis:
+  enabled: false
+  address: 127.0.0.1
+  port: 6379
+  password: ""
+  channel: nuvotifier:votes
+  pool-settings:
+    timeout: 5000
+    max-total: 128
+    max-idle: 128
+    min-idle: 16
+    min-evictable-idle-time: 60000
+    time-between-eviction-runs: 30000
+    num-tests-per-eviction-run: 3
+    block-when-exhausted: true
+
 # Configuration section for all vote forwarding to NuVotifier
-# Since this is the standalone version, no other forwarding methods other than 'proxy' are supported.
 forwarding:
   # Specify servers to proxy votes for.
   lobby:
