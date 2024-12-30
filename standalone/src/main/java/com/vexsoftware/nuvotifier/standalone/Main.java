@@ -8,8 +8,12 @@ public class Main {
         VotifierBootstrap bootstrap = new VotifierBootstrap(args);
         bootstrap.init();
 
-        while (true) {
-            // Keep the thing running
+        Runtime.getRuntime().addShutdownHook(new Thread(bootstrap::shutdown, "shutdown"));
+
+        try {
+            Thread.sleep(Integer.MAX_VALUE);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
         }
     }
 }

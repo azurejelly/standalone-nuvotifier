@@ -54,6 +54,12 @@ public class StandaloneVotifierPlugin implements VotifierPlugin {
         this.makeForwardingSource(backendServers);
     }
 
+    public void shutdown() {
+        if (bootstrap != null) {
+            bootstrap.shutdown();
+        }
+    }
+
     private void makeForwardingSource(Map<String, BackendServer> backendServers) {
         List<ProxyForwardingVoteSource.BackendServer> serverList = new ArrayList<>();
         for (Map.Entry<String, BackendServer> entry : backendServers.entrySet()) {

@@ -29,9 +29,7 @@ public class VotifierBootstrap {
     private File directory;
     private VotifierConfiguration config;
     private CommandLine commandLine;
-    private Options options;
     private InetSocketAddress socket;
-    private ObjectMapper mapper;
     private StandaloneVotifierPlugin plugin;
 
     public VotifierBootstrap(String[] args) {
@@ -40,13 +38,15 @@ public class VotifierBootstrap {
     }
 
     public void init() {
-        this.options = new Options();
-        this.options.addOption(CommandArguments.CONFIG_FOLDER);
-        this.options.addOption(CommandArguments.HOST);
-        this.options.addOption(CommandArguments.PORT);
+        logger.info("Initializing Votifier...");
 
-        this.mapper = new ObjectMapper(new YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER));
-        this.mapper.findAndRegisterModules();
+        Options options = new Options();
+        options.addOption(CommandArguments.CONFIG_FOLDER);
+        options.addOption(CommandArguments.HOST);
+        options.addOption(CommandArguments.PORT);
+
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER));
+        mapper.findAndRegisterModules();
 
         try {
             CommandLineParser parser = new DefaultParser();
@@ -162,5 +162,10 @@ public class VotifierBootstrap {
             logger.error("Could not initialize standalone Votifier server", ex);
             System.exit(1);
         });
+    }
+
+    public void shutdown() {
+        logger.info("Votifier is now shutting down...");
+        this.plugin.shutdown();
     }
 }

@@ -121,6 +121,7 @@ public class VotifierServerBootstrap {
                 plugin.getPluginLogger().error("Unable to shutdown server channel", e);
             }
         }
+
         eventLoopGroup.shutdownGracefully();
         bossLoopGroup.shutdownGracefully();
 
