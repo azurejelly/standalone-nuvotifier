@@ -4,6 +4,6 @@ services:
     image: azurejelly/standalone-nuvotifier:latest
     restart: unless-stopped
     ports:
-      - 8192:8192
+      - "8192:8192"
     volumes:
       - ./docker-config:/app/config
