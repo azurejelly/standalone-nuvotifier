@@ -58,18 +58,20 @@ public class StandaloneVotifierPlugin implements VotifierPlugin {
     }
 
     public void start(Consumer<Throwable> error) {
-        if (bootstrap != null) {
-            bootstrap.shutdown();
-        }
-
         this.bootstrap = new VotifierServerBootstrap(bind.getHostString(), bind.getPort(), this, disableV1Protocol);
         this.bootstrap.start(error);
         this.makeForwardingSource(backendServers);
     }
 
-    public void shutdown() {
+    public void halt() {
         if (bootstrap != null) {
             bootstrap.shutdown();
+            bootstrap = null;
+        }
+
+        if (forwardingMethod != null) {
+            forwardingMethod.halt();
+            forwardingMethod = null;
         }
     }
 

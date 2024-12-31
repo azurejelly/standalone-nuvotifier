@@ -55,6 +55,6 @@ public class RedisForwardingVoteSource implements ForwardingVoteSource {
 
     @Override
     public void halt() {
-
+        pool.close();
     }
 }

@@ -167,6 +167,6 @@ public class VotifierBootstrap {
 
     public void shutdown() {
         logger.info("Votifier is now shutting down...");
-        this.plugin.shutdown();
+        plugin.halt();
     }
 }

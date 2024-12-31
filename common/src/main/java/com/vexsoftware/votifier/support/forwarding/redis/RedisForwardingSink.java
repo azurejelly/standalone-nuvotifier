@@ -54,8 +54,8 @@ public class RedisForwardingSink extends JedisPubSub implements ForwardingVoteSi
             try (Jedis jedis = pool.getResource()) {
                 jedis.subscribe(this, channel);
             }
-        }).exceptionally(exception -> {
-            exception.printStackTrace();
+        }).exceptionally(ex -> {
+            ex.printStackTrace();
             return null;
         });
     }
@@ -77,13 +77,18 @@ public class RedisForwardingSink extends JedisPubSub implements ForwardingVoteSi
             // Using try-catch block to avoid channel break on exceptions.
             try {
                 handleMessage(message);
-            } catch (Exception exception) {
-                exception.printStackTrace();
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
     }
 
     @Override
     public void halt() {
+        try {
+            pool.destroy();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }
