@@ -4,19 +4,11 @@ plugins {
     `java-library`
 }
 
+apply(plugin = "com.github.johnrengelman.shadow")
 applyPlatformAndCoreConfiguration()
-applyCommonArtifactoryConfig()
-applyShadowConfiguration()
 
 repositories {
-    maven {
-        name = "paper"
-        url = uri("https://papermc.io/repo/repository/maven-public/")
-    }
-}
-
-configurations {
-    compileClasspath.get().extendsFrom(create("shadeOnly"))
+    maven("https://papermc.io/repo/repository/maven-public/")
 }
 
 dependencies {
@@ -26,32 +18,47 @@ dependencies {
     "api"(project(":nuvotifier-common"))
 }
 
-
-tasks.named<Copy>("processResources") {
-    val internalVersion = project.ext["internalVersion"]
-    inputs.property("internalVersion", internalVersion)
-    filesMatching("plugin.yml") {
-        expand("internalVersion" to internalVersion)
+tasks {
+    named<Copy>("processResources") {
+        val internalVersion = project.ext["internalVersion"]
+        inputs.property("internalVersion", internalVersion)
+        filesMatching("plugin.yml") {
+            expand("internalVersion" to internalVersion)
+        }
     }
-}
 
-tasks.named<Jar>("jar") {
-    val projectVersion = project.version
-    inputs.property("projectVersion", projectVersion)
-    manifest {
-        attributes("Implementation-Version" to projectVersion)
+    named<Jar>("jar") {
+        val projectVersion = project.version
+        inputs.property("projectVersion", projectVersion)
+        manifest {
+            attributes("Implementation-Version" to projectVersion)
+        }
     }
-}
 
-tasks.named<ShadowJar>("shadowJar") {
-    configurations = listOf(project.configurations["shadeOnly"], project.configurations["runtimeClasspath"])
+    named<ShadowJar>("shadowJar") {
+        archiveClassifier.set("dist")
 
-    dependencies {
-        include(dependency(":nuvotifier-api"))
-        include(dependency(":nuvotifier-common"))
+        val reloc = "com.vexsoftware.votifier.libs"
+        relocate("redis", "$reloc.redis")
+        relocate("org.json", "$reloc.json")
+        relocate("org.apache", "$reloc.apache")
+        relocate("org.slf4j", "$reloc.slf4j")
+        relocate("io.netty", "$reloc.netty")
+        relocate("com.google.gson", "$reloc.gson")
+
+        exclude("GradleStart**")
+        exclude(".cache");
+        exclude("LICENSE*")
+        exclude("META-INF/services/**")
+        exclude("META-INF/maven/**")
+        exclude("META-INF/versions/**")
+        exclude("org/intellij/**")
+        exclude("org/jetbrains/**")
+        exclude("**/module-info.class")
+        exclude("*.yml")
     }
-}
 
-tasks.named("assemble").configure {
-    dependsOn("shadowJar")
+    named("assemble").configure {
+        dependsOn("shadowJar")
+    }
 }

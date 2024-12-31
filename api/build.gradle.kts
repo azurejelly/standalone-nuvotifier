@@ -3,8 +3,8 @@ plugins {
 }
 
 applyPlatformAndCoreConfiguration()
-applyCommonArtifactoryConfig()
 
 dependencies {
-    "implementation"("com.google.code.gson:gson:${Versions.GSON}")
+    compileOnly("com.google.code.gson:gson:${Versions.GSON}")
+    testImplementation("com.google.code.gson:gson:${Versions.GSON}")
 }
