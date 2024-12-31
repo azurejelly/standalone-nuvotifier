@@ -53,3 +53,5 @@ fabric/run/
 
 # docker stuff
 docker-config/
+.data/
+rsa/
