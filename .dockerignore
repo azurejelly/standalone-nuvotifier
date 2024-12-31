@@ -2,8 +2,11 @@
 .idea/
 .github/
 build/
-dev/
+.devenv/
+.git/
 Jenkinsfile
 LICENSE
 README.md
 .gitignore
+docker-compose.yml
+Dockerfile
