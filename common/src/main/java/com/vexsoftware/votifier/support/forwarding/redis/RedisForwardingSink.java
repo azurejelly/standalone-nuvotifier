@@ -50,14 +50,15 @@ public class RedisForwardingSink extends JedisPubSub implements ForwardingVoteSi
             );
         }
 
-        CompletableFuture.runAsync(() -> {
+        // Using a CompletableFuture here caused the vote to be received
+        // like 4 times instead of 1 - I shouldn't be using a Thread here
+        // because Bukkit doesn't like it but I don't like Bukkit either
+        // at this point so fuck it
+        new Thread(() -> {
             try (Jedis jedis = pool.getResource()) {
                 jedis.subscribe(this, channel);
             }
-        }).exceptionally(ex -> {
-            ex.printStackTrace();
-            return null;
-        });
+        }, "Votifier Redis Forwarding Sink").start();
     }
 
     private final ForwardedVoteListener listener;
