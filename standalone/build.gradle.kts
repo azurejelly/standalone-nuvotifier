@@ -42,8 +42,7 @@ tasks {
 
     named<ShadowJar>("shadowJar") {
         archiveBaseName.set("nuvotifier-standalone")
-        archiveClassifier.set("")
-        archiveVersion.set("")
+        archiveClassifier.set("dist")
     }
 
     named("assemble").configure {

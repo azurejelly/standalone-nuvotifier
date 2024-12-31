@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class VoteTest {
+
     @Test
     public void testVoteConstructFromJsonObject() {
-
         String serviceName = "serviceNameA";
         String username = "usernameA";
         String address = "home";

@@ -4,54 +4,62 @@ plugins {
     `java-library`
 }
 
+apply(plugin = "com.github.johnrengelman.shadow")
 applyPlatformAndCoreConfiguration()
-applyCommonArtifactoryConfig()
-applyShadowConfiguration()
 
 repositories {
-    maven {
-        name = "bungeecord"
-        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-    }
-}
-
-configurations {
-    compileClasspath.get().extendsFrom(create("shadeOnly"))
+    maven("https://oss.sonatype.org/content/repositories/snapshots/")
 }
 
 dependencies {
-    "compileOnly"("net.md-5:bungeecord-api:1.18-R0.1-SNAPSHOT")
-    "api"(project(":nuvotifier-api"))
-    "api"(project(":nuvotifier-common"))
-    "implementation"("redis.clients:jedis:${Versions.JEDIS}")
+    api(project(":nuvotifier-api"))
+    api(project(":nuvotifier-common"))
+    compileOnly("net.md-5:bungeecord-api:1.18-R0.1-SNAPSHOT")
+    implementation("redis.clients:jedis:${Versions.JEDIS}")
 }
 
+tasks {
+    named<Copy>("processResources") {
+        val internalVersion = project.ext["internalVersion"]
+        inputs.property("internalVersion", internalVersion)
 
-tasks.named<Copy>("processResources") {
-    val internalVersion = project.ext["internalVersion"]
-    inputs.property("internalVersion", internalVersion)
-    filesMatching("bungee.yml") {
-        expand("internalVersion" to internalVersion)
+        filesMatching("bungee.yml") {
+            expand("internalVersion" to internalVersion)
+        }
     }
-}
 
-tasks.named<Jar>("jar") {
-    val projectVersion = project.version
-    inputs.property("projectVersion", projectVersion)
-    manifest {
-        attributes("Implementation-Version" to projectVersion)
+    named<Jar>("jar") {
+        val projectVersion = project.version
+        inputs.property("projectVersion", projectVersion)
+        manifest {
+            attributes("Implementation-Version" to projectVersion)
+        }
     }
-}
 
-tasks.named<ShadowJar>("shadowJar") {
-    configurations = listOf(project.configurations["shadeOnly"], project.configurations["runtimeClasspath"])
+    named<ShadowJar>("shadowJar") {
+        archiveClassifier.set("dist")
 
-    dependencies {
-        include(dependency(":nuvotifier-api"))
-        include(dependency(":nuvotifier-common"))
+        val reloc = "com.vexsoftware.votifier.libs"
+        relocate("redis", "$reloc.redis")
+        relocate("org.json", "$reloc.json")
+        relocate("org.apache", "$reloc.apache")
+        relocate("org.slf4j", "$reloc.slf4j")
+        relocate("io.netty", "$reloc.netty")
+        relocate("com.google.gson", "$reloc.gson")
+
+        exclude("GradleStart**")
+        exclude(".cache");
+        exclude("LICENSE*")
+        exclude("META-INF/services/**")
+        exclude("META-INF/maven/**")
+        exclude("META-INF/versions/**")
+        exclude("org/intellij/**")
+        exclude("org/jetbrains/**")
+        exclude("**/module-info.class")
+        exclude("*.yml")
     }
-}
 
-tasks.named("assemble").configure {
-    dependsOn("shadowJar")
+    named("assemble").configure {
+        dependsOn("shadowJar")
+    }
 }
