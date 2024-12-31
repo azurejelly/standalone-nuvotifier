@@ -2,39 +2,21 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     `java-library`
+    alias(libs.plugins.shadow)
 }
-
-apply(plugin = "com.github.johnrengelman.shadow")
-applyPlatformAndCoreConfiguration()
 
 repositories {
     maven("https://papermc.io/repo/repository/maven-public/")
 }
 
 dependencies {
-    "compileOnly"("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
-    "implementation"("redis.clients:jedis:${Versions.JEDIS}")
-    "api"(project(":nuvotifier-api"))
-    "api"(project(":nuvotifier-common"))
+    api(project(":nuvotifier-api"))
+    api(project(":nuvotifier-common"))
+    compileOnly(libs.paper)
+    implementation(libs.jedis)
 }
 
 tasks {
-    named<Copy>("processResources") {
-        val internalVersion = project.ext["internalVersion"]
-        inputs.property("internalVersion", internalVersion)
-        filesMatching("plugin.yml") {
-            expand("internalVersion" to internalVersion)
-        }
-    }
-
-    named<Jar>("jar") {
-        val projectVersion = project.version
-        inputs.property("projectVersion", projectVersion)
-        manifest {
-            attributes("Implementation-Version" to projectVersion)
-        }
-    }
-
     named<ShadowJar>("shadowJar") {
         archiveClassifier.set("dist")
 

@@ -2,10 +2,8 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     `java-library`
+    alias(libs.plugins.shadow)
 }
-
-apply(plugin = "com.github.johnrengelman.shadow")
-applyPlatformAndCoreConfiguration()
 
 repositories {
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
@@ -14,28 +12,11 @@ repositories {
 dependencies {
     api(project(":nuvotifier-api"))
     api(project(":nuvotifier-common"))
-    compileOnly("net.md-5:bungeecord-api:1.18-R0.1-SNAPSHOT")
-    implementation("redis.clients:jedis:${Versions.JEDIS}")
+    compileOnly(libs.bungeecord)
+    implementation(libs.jedis)
 }
 
 tasks {
-    named<Copy>("processResources") {
-        val internalVersion = project.ext["internalVersion"]
-        inputs.property("internalVersion", internalVersion)
-
-        filesMatching("bungee.yml") {
-            expand("internalVersion" to internalVersion)
-        }
-    }
-
-    named<Jar>("jar") {
-        val projectVersion = project.version
-        inputs.property("projectVersion", projectVersion)
-        manifest {
-            attributes("Implementation-Version" to projectVersion)
-        }
-    }
-
     named<ShadowJar>("shadowJar") {
         archiveClassifier.set("dist")
 
