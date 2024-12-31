@@ -27,9 +27,9 @@ tasks {
         archiveClassifier.set("dist")
 
         val reloc = "com.vexsoftware.votifier.libs"
-        relocate("redis", "$reloc.redis")
+        relocate("redis.clients.jedis", "$reloc.redis.clients.jedis")
         relocate("org.json", "$reloc.json")
-        relocate("org.apache", "$reloc.apache")
+        relocate("org.apache.commons.pool2", "$reloc.apache.commons.pool2")
         relocate("org.slf4j", "$reloc.slf4j")
         relocate("io.netty", "$reloc.netty")
         relocate("com.google.gson", "$reloc.gson")
