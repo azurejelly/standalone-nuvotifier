@@ -1,7 +1,9 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 
 plugins {
     `java-library`
+    alias(libs.plugins.pluginyml.bukkit)
     alias(libs.plugins.shadow)
 }
 
@@ -37,10 +39,46 @@ tasks {
         exclude("org/intellij/**")
         exclude("org/jetbrains/**")
         exclude("**/module-info.class")
-        exclude("*.yml")
     }
 
     named("assemble").configure {
         dependsOn("shadowJar")
+    }
+}
+
+bukkit {
+    name = "Votifier"
+    description = "A plugin that gets notified when votes are made for the server on toplists."
+    version = project.version.toString()
+    main = "com.vexsoftware.votifier.NuVotifierBukkit"
+    authors = listOf("azurejelly", "Ichbinjoe", "blakeman8192", "Kramer", "tuxed")
+    apiVersion = "1.13"
+
+    commands {
+        register("nvreload") {
+            description = "Reloads the NuVotifier configuration"
+            permission = "nuvotifier.reload"
+            permissionMessage = "You do not have permission to run this command."
+            usage = "/nvreload"
+        }
+
+        register("testvote") {
+            description = "Sends a test vote to the server"
+            permission = "nuvotifier.testvote"
+            permissionMessage = "You do not have permission to run this command."
+            usage = "/testvote [username] [serviceName=?] [username=?] [address=?] [localTimestamp=?] [timestamp=?]"
+        }
+    }
+
+    permissions {
+        register("nuvotifier.reload") {
+            description = "Allows you to reload the NuVotifier plugin"
+            default = BukkitPluginDescription.Permission.Default.OP
+        }
+
+        register("nuvotifier.testvote") {
+            description = "Allows you to send a test vote"
+            default = BukkitPluginDescription.Permission.Default.OP
+        }
     }
 }

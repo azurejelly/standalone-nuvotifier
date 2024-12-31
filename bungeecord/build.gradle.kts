@@ -3,6 +3,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     `java-library`
     alias(libs.plugins.shadow)
+    alias(libs.plugins.pluginyml.bungee)
 }
 
 repositories {
@@ -37,10 +38,16 @@ tasks {
         exclude("org/intellij/**")
         exclude("org/jetbrains/**")
         exclude("**/module-info.class")
-        exclude("*.yml")
     }
 
     named("assemble").configure {
         dependsOn("shadowJar")
     }
+}
+
+bungee {
+    name = "NuVotifier"
+    version = project.version.toString()
+    main = "com.vexsoftware.votifier.bungee.NuVotifier"
+    author = "azurejelly, Ichbinjoe, blakeman8192, Kramer, tuxed"
 }
