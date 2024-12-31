@@ -1,0 +1,37 @@
+services:
+  redis:
+    container_name: redis
+    image: redis:latest
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    ports:
+      - "6379:6379"
+  standalone:
+    container_name: nuvotifier-standalone
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    ports:
+      - "8192:8192"
+    volumes:
+      - ./standalone-config:/app/config
+  paper:
+    container_name: nuvotifier-paper
+    build:
+      context: ..
+      dockerfile: .devenv/paper-server/Dockerfile
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    ports:
+      - "25565:25565"
+    volumes:
+      - ./paper-server:/srv/plugins/Votifier
+      - ./paper-server/.data/world:/srv/world
+      - ./paper-server/.data/world_the_end:/srv/world_the_end
+      - ./paper-server/.data/world_nether:/srv/world_nether
+      - ./paper-server/.data/cache:/srv/cache
