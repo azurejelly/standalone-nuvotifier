@@ -1,31 +1,78 @@
-import org.ajoberstar.grgit.Grgit
-
 plugins {
-    id("net.kyori.blossom") version "1.2.0" apply false
+    id("java")
 }
 
-logger.lifecycle("""
-*******************************************
- You are building NuVotifier!
- If you encounter trouble:
- 1) Try running 'build' in a separate Gradle run
- 2) Use gradlew and not gradle
- 3) If you still need help, you should reconsider building NuVotifier!
+subprojects {
+    apply(plugin = "java")
+    apply(plugin = "maven-publish")
 
- Output files will be in [subproject]/build/libs
-*******************************************
-""")
+    group = rootProject.group
+    version = rootProject.version
 
+    repositories {
+        mavenCentral()
+        maven("https://oss.sonatype.org/content/repositories/snapshots/")
+    }
 
-applyRootArtifactoryConfig()
+    dependencies {
+        compileOnly(rootProject.libs.findbugs)
+        testImplementation(rootProject.libs.bundles.junit.jupiter)
+        testImplementation(rootProject.libs.bundles.mockito)
+    }
 
-if (!project.hasProperty("gitCommitHash")) {
-    apply(plugin = "org.ajoberstar.grgit")
-    ext["gitCommitHash"] = try {
-        Grgit.open(mapOf("currentDir" to project.rootDir))?.head()?.abbreviatedId
-    } catch (e: Exception) {
-        logger.warn("Error getting commit hash", e)
+    configurations.all {
+        resolutionStrategy {
+            cacheChangingModulesFor(5, "MINUTES")
+        }
+    }
 
-        "no.git.id"
+    tasks {
+        configure<JavaPluginExtension> {
+            toolchain {
+                languageVersion.set(JavaLanguageVersion.of(17))
+            }
+
+            disableAutoTargetJvm()
+            withJavadocJar()
+            withSourcesJar()
+        }
+
+        withType<JavaCompile> {
+            val disabledLint = listOf("processing", "path", "fallthrough", "serial")
+
+            options.release.set(11)
+            options.compilerArgs.addAll(listOf("-Xlint:all") + disabledLint.map { "-Xlint:-$it" })
+            options.isDeprecation = true
+            options.encoding = "UTF-8"
+            options.compilerArgs.add("-parameters")
+        }
+
+        withType<Test>().configureEach {
+            useJUnitPlatform()
+        }
+
+        withType<Javadoc>().configureEach {
+            options.encoding = "UTF-8"
+            (options as StandardJavadocDocletOptions).apply {
+                addStringOption("Xdoclint:none", "-quiet")
+                tags(
+                    "apiNote:a:API Note:",
+                    "implSpec:a:Implementation Requirements:",
+                    "implNote:a:Implementation Note:"
+                )
+            }
+        }
+
+        named<Copy>("processResources") {
+            filesMatching("bungee.yml|plugin.yml") {
+                expand("version" to rootProject.version)
+            }
+        }
+
+        named<Jar>("jar") {
+            manifest {
+                attributes("Implementation-Version" to rootProject.version)
+            }
+        }
     }
 }

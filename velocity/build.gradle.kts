@@ -2,14 +2,12 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     `java-library`
-    id("net.kyori.blossom")
+    alias(libs.plugins.blossom)
+    alias(libs.plugins.shadow)
 }
 
-apply(plugin = "com.github.johnrengelman.shadow")
-applyPlatformAndCoreConfiguration()
-
 blossom {
-    replaceToken("@version@", project.ext["internalVersion"])
+    replaceToken("@version@", project.version.toString())
 }
 
 repositories {
@@ -17,31 +15,14 @@ repositories {
 }
 
 dependencies {
-    compileOnly("com.velocitypowered:velocity-api:${Versions.VELOCITY}")
-    annotationProcessor("com.velocitypowered:velocity-api:${Versions.VELOCITY}")
+    compileOnly(libs.velocity)
+    annotationProcessor(libs.velocity)
 
     api(project(":nuvotifier-api"))
     api(project(":nuvotifier-common"))
 }
 
 tasks {
-    named<Copy>("processResources") {
-        val internalVersion = project.ext["internalVersion"]
-        inputs.property("internalVersion", internalVersion)
-
-        filesMatching("bungee.yml") {
-            expand("internalVersion" to internalVersion)
-        }
-    }
-
-    named<Jar>("jar") {
-        val projectVersion = project.version
-        inputs.property("projectVersion", projectVersion)
-        manifest {
-            attributes("Implementation-Version" to projectVersion)
-        }
-    }
-
     named<ShadowJar>("shadowJar") {
         archiveClassifier.set("dist")
 
