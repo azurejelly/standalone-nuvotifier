@@ -108,17 +108,17 @@ public class VotifierBootstrap {
                 ? commandLine.getOptionValue(CommandArguments.HOST)
                 : config.getHost();
 
-        if (commandLine.hasOption(CommandArguments.PORT)) {
-            try {
+        try {
+            if (commandLine.hasOption(CommandArguments.PORT)) {
                 String str = commandLine.getOptionValue(CommandArguments.PORT);
                 this.socket = new InetSocketAddress(address, Integer.parseInt(str));
-            } catch (NumberFormatException ex) {
-                HelpFormatter formatter = new HelpFormatter();
-                formatter.printHelp("java -jar nuvotifier-standalone.jar [OPTIONS]", options);
-                System.exit(1);
+            } else {
+                this.socket = new InetSocketAddress(address, config.getPort());
             }
-        } else {
-            this.socket = new InetSocketAddress(address, config.getPort());
+        } catch (IllegalArgumentException ex) {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("java -jar nuvotifier-standalone.jar [OPTIONS]", options);
+            System.exit(1);
         }
 
         File rsaFolder = new File(directory, "rsa" + File.separator);
