@@ -19,7 +19,9 @@ dependencies {
     annotationProcessor(libs.velocity)
 
     api(project(":nuvotifier-api"))
-    api(project(":nuvotifier-common"))
+    api(project(":nuvotifier-common")) {
+        exclude(group = "org.slf4j", module = "slf4j-api")
+    }
 }
 
 tasks {
@@ -30,7 +32,6 @@ tasks {
         relocate("redis.clients.jedis", "$reloc.redis.clients.jedis")
         relocate("org.json", "$reloc.json")
         relocate("org.apache.commons.pool2", "$reloc.apache.commons.pool2")
-        relocate("org.slf4j", "$reloc.slf4j")
         relocate("io.netty", "$reloc.netty")
         relocate("com.google.gson", "$reloc.gson")
 
