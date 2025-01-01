@@ -6,10 +6,6 @@ plugins {
     alias(libs.plugins.pluginyml.bungee)
 }
 
-repositories {
-    maven("https://oss.sonatype.org/content/repositories/snapshots/")
-}
-
 dependencies {
     api(project(":nuvotifier-api"))
     api(project(":nuvotifier-common"))

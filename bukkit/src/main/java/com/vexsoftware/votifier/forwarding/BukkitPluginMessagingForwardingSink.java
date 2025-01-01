@@ -3,7 +3,6 @@ package com.vexsoftware.votifier.forwarding;
 import com.vexsoftware.votifier.NuVotifierBukkit;
 import com.vexsoftware.votifier.support.forwarding.AbstractPluginMessagingForwardingSink;
 import com.vexsoftware.votifier.support.forwarding.ForwardedVoteListener;
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -18,7 +17,10 @@ public class BukkitPluginMessagingForwardingSink extends AbstractPluginMessaging
 
     public BukkitPluginMessagingForwardingSink(Plugin p, String channel, ForwardedVoteListener listener) {
         super(listener);
-        Validate.notNull(channel, "Channel cannot be null.");
+        if (channel == null) {
+            throw new IllegalArgumentException("channel cannot be null");
+        }
+
         this.channel = channel;
         Bukkit.getMessenger().registerIncomingPluginChannel(p, channel, this);
         this.p = p;

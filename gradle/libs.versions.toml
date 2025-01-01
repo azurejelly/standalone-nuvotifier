@@ -18,8 +18,8 @@ netty-handler = { module = "io.netty:netty-handler", version.ref = "netty" }
 netty-transport-native-epoll = { module = "io.netty:netty-transport-native-epoll", version.ref = "netty" }
 findbugs = "com.google.code.findbugs:jsr305:3.0.2"
 jedis = "redis.clients:jedis:4.3.1"
-bungeecord = "net.md-5:bungeecord-api:1.18-R0.1-SNAPSHOT"
-paper = "io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT"
+bungeecord = "net.md-5:bungeecord-api:1.21-R0.1-SNAPSHOT"
+paper = "io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT"
 json = "org.json:json:20180130"
 guava = "com.google.guava:guava:28.1-jre"
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }

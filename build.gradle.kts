@@ -11,6 +11,7 @@ subprojects {
 
     repositories {
         mavenCentral()
+        maven("https://repo.glaremasters.me/repository/public")
         maven("https://oss.sonatype.org/content/repositories/snapshots/")
     }
 
@@ -29,7 +30,7 @@ subprojects {
     tasks {
         configure<JavaPluginExtension> {
             toolchain {
-                languageVersion.set(JavaLanguageVersion.of(17))
+                languageVersion.set(JavaLanguageVersion.of(21))
             }
 
             disableAutoTargetJvm()
