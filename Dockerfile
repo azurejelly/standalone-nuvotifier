@@ -1,4 +1,4 @@
-FROM gradle:8.10.0-jdk17 AS build
+FROM gradle:8.12.0-jdk21 AS build
 
 WORKDIR /build
 
@@ -15,7 +15,7 @@ COPY . .
 RUN --mount=type=cache,target=/home/gradle/.gradle/caches \
     ./gradlew --no-daemon nuvotifier-standalone:build
 
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
