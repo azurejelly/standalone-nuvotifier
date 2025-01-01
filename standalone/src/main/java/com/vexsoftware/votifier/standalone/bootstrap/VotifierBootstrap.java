@@ -164,7 +164,7 @@ public class VotifierBootstrap {
                         logger.info("list.");
                         logger.info("------------------------------------------------------------------------------");
                     } catch (IOException e) {
-                        logger.error("Failed to generate and write a random default token", e);
+                        logger.error("Failed to write a random default token", e);
                         System.exit(1);
                     }
                 }
