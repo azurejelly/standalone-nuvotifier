@@ -3,6 +3,7 @@ package com.vexsoftware.votifier.standalone.config;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vexsoftware.votifier.standalone.config.redis.RedisVotifierConfiguration;
 import com.vexsoftware.votifier.standalone.config.server.BackendServer;
+import com.vexsoftware.votifier.util.TokenUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,7 @@ public class VotifierConfiguration {
         this.port = 8192;
         this.debug = false;
         this.tokens = new HashMap<>();
+        this.tokens.put("default", TokenUtil.newToken());
         this.redis = new RedisVotifierConfiguration();
         this.disableV1Protocol = false;
         this.backendServers = new HashMap<>();

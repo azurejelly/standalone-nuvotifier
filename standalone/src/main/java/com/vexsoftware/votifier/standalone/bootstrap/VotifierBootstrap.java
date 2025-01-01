@@ -9,6 +9,7 @@ import com.vexsoftware.votifier.standalone.plugin.StandaloneVotifierPlugin;
 import com.vexsoftware.votifier.standalone.plugin.builder.VotifierServerBuilder;
 import com.vexsoftware.votifier.net.protocol.v1crypto.RSAIO;
 import com.vexsoftware.votifier.net.protocol.v1crypto.RSAKeygen;
+import com.vexsoftware.votifier.util.TokenUtil;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ public class VotifierBootstrap {
     private final Logger logger;
     private final String[] args;
     private File directory;
+    private File configFile;
     private VotifierConfiguration config;
     private CommandLine commandLine;
     private InetSocketAddress socket;
@@ -83,20 +85,20 @@ public class VotifierBootstrap {
         }
 
         try {
-            File file = new File(directory, "config.yml");
+            this.configFile = new File(directory, "config.yml");
 
-            if (!file.exists()) {
+            if (!configFile.exists()) {
                 InputStream resource = this.getClass().getClassLoader().getResourceAsStream("config.yml");
                 if (resource == null) {
                     logger.error("Failed to find default configuration file in JAR.");
                     System.exit(1);
                 }
 
-                Files.copy(resource, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(resource, configFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 logger.debug("Copied default configuration file from JAR.");
             }
 
-            this.config = mapper.readValue(file, VotifierConfiguration.class);
+            this.config = mapper.readValue(configFile, VotifierConfiguration.class);
         } catch (IOException e) {
             logger.error("Failed to read or copy defaults to configuration file:", e);
             System.exit(1);
@@ -148,7 +150,28 @@ public class VotifierBootstrap {
                     .redis(config.getRedis())
                     .backendServers(config.getBackendServers());
 
-            this.config.getTokens().forEach(builder::addToken);
+            this.config.getTokens().forEach((service, token) -> {
+                if ("default".equals(service) && "%default_token%".equals(token)) {
+                    token = TokenUtil.newToken();
+                    config.getTokens().put(service, token);
+
+                    try {
+                        mapper.writeValue(configFile, config);
+                        logger.info("------------------------------------------------------------------------------");
+                        logger.info("No tokens were found in your configuration, so we've generated one for you.");
+                        logger.info("Your default Votifier token is '{}'.", token);
+                        logger.info("You will need to provide this token when you submit your server to a voting");
+                        logger.info("list.");
+                        logger.info("------------------------------------------------------------------------------");
+                    } catch (IOException e) {
+                        logger.error("Failed to generate and write a random default token", e);
+                        System.exit(1);
+                    }
+                }
+
+                builder.addToken(service, token);
+            });
+
             this.plugin = builder.create();
         } catch (Exception ex) {
             logger.error("Failed to build the standalone Votifier server", ex);
