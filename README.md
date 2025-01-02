@@ -1,5 +1,5 @@
-# standalone-nuvotifier
-Standalone NuVotifier server implementation. From the original README:
+# azure's NuVotifier fork
+A NuVotifier fork with Redis forwarding support and a standalone server implementation. From the original README:
 > NuVotifier is a secure alternative to using the original Votifier project. 
 > NuVotifier will work in place of Votifier - any vote listener that supports 
 > Votifier will also support NuVotifier.
@@ -10,13 +10,20 @@ Standalone NuVotifier server implementation. From the original README:
 - [Developer Information](https://github.com/NuVotifier/NuVotifier/wiki/Developer-Documentation)
 
 ## Running
-Grab a compiled binary from [GitHub releases](https://github.com/azurejelly/standalone-nuvotifier/releases) and run it from the command line. For example:
+You can get the latest release directly from GitHub by clicking [here](https://github.com/azurejelly/standalone-nuvotifier/releases).
+Then, follow the instructions for your server software or for the standalone version.
+
+### Bukkit, BungeeCord and Velocity
+Drag and drop the downloaded JAR into your `plugins/` folder. You should've downloaded the JAR that has your server software in its name.
+If you've done everything right, it should work out of the box.
+
+### Standalone
+Open up the terminal, go into the directory the previously downloaded JAR is at, and then run it like this:
 ```shell
-$ curl -O https://github.com/azurejelly/standalone-nuvotifier/releases/download/3.1.0/nuvotifier-standalone.jar
 $ java -Xms512M -Xmx512M -jar nuvotifier-standalone.jar
 ```
 
-You can also use command line arguments to configure some settings:
+You can also use command line arguments to configure some settings, such as the hostname:
 ```shell
 $ java -Xms512M -Xmx512M -jar nuvotifier-standalone.jar --host 127.0.0.1 --config /etc/nuvotifier/
 ```
@@ -26,13 +33,12 @@ To get a full list of options, run:
 $ java -jar nuvotifier-standalone.jar --help
 ```
 
-## Using Docker
+### Standalone with Docker
 A Docker image is available at [Docker Hub](https://hub.docker.com/r/azurejelly/standalone-nuvotifier). To pull it, run:
 ```shell
 $ docker pull azurejelly/standalone-nuvotifier:latest
 ```
 
-### Running
 You can run the image using a command like:
 ```shell
 $ docker run -p 8192:8192 \
@@ -51,28 +57,12 @@ This will:
 - Use the `azurejelly/standalone-nuvotifier:latest` image;
 - And pass `--port 8192` as a command line argument to NuVotifier.
 
-Additionally, if you're also running your Minecraft server with Docker, you could create a network for cross-container communication:
+Additionally, if you're also running your Minecraft server with Docker, you could create a network for cross-container communication (though do note that you will need to recreate your existing containers in order to do this):
 ```shell
 $ docker network create votifierNetwork
 $ docker run ... --network votifierNetwork ...
 ```
-
-Note that you will need to recreate your existing containers to do this.
-
-### Compose
-The Docker Compose equivalent of the previous `docker run` command (minus networking stuff) is as follows:
-```yaml
-services:
-  forwarder:
-    container_name: nuvotifier
-    image: azurejelly/standalone-nuvotifier:latest
-    restart: unless-stopped
-    ports:
-      - 8192:8192
-    volumes:
-      - ./config:/app/config
-```
+If you want to use Docker Compose, an example [`docker-compose.yml`](./docker-compose.yml) file is available on the repository.
 
 # License
-
 NuVotifier is GNU GPLv3 licensed. This project's license can be viewed [here](LICENSE).
