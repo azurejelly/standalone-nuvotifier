@@ -45,7 +45,7 @@ $ docker run -p 8192:8192 \
     -v /etc/nuvotifier:/app/config \
     --restart unless-stopped \
     --name nuvotifier \
-    azurejelly/standalone-nuvotifier:latest
+    azurejelly/standalone-nuvotifier:latest \
     --port 8192
 ```
 
@@ -56,6 +56,7 @@ This will:
 - Name the container `nuvotifier`;
 - Use the `azurejelly/standalone-nuvotifier:latest` image;
 - And pass `--port 8192` as a command line argument to NuVotifier.
+  - Not required as `8192/tcp` is already the default port, but helps to show that you can pass arguments such as `--port` or `--config`.
 
 If you want to use Docker Compose, an example [`docker-compose.yml`](./docker-compose.yml) file is available on the repository.
 
