@@ -57,11 +57,6 @@ This will:
 - Use the `azurejelly/standalone-nuvotifier:latest` image;
 - And pass `--port 8192` as a command line argument to NuVotifier.
 
-Additionally, if you're also running your Minecraft server with Docker, you could create a network for cross-container communication (though do note that you will need to recreate your existing containers in order to do this):
-```shell
-$ docker network create votifierNetwork
-$ docker run ... --network votifierNetwork ...
-```
 If you want to use Docker Compose, an example [`docker-compose.yml`](./docker-compose.yml) file is available on the repository.
 
 # License
